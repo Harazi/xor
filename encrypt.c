@@ -3,11 +3,17 @@
 
 char *encrypt(const char *message, void *key, size_t messageLength, size_t keyLength)
 {
-  char *encrypted = calloc(1, messageLength + 1); // (+ 1) for null byte
+  char *encrypted = calloc(sizeof(char), messageLength + 1); // (+ 1) for null byte
   size_t keyPointer = 0;
 
   for (size_t i = 0; i < messageLength; i++)
   {
+    // will not encrypt the newline character
+    if (message[i] == '\n') {
+      encrypted[i] = message[i];
+      continue;
+    }
+
     if (keyPointer >= keyLength)
       keyPointer = 0;
 
