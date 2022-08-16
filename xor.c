@@ -8,8 +8,12 @@
 int main(int argc, char **argv)
 {
   if (argc < 2) {
-    fprintf(stderr, "there is no key passed as an argument\n");
-    return 1;
+    fprintf(stderr, "Usage: %s <encryption key>\n", argv[0]);
+    exit(EXIT_FAILURE);
+  }
+  if (argc > 2) {
+    fprintf(stderr, "Too many arguments!\n");
+    exit(EXIT_FAILURE);
   }
 
   char *key = argv[1];
