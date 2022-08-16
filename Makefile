@@ -10,3 +10,8 @@ xor.o: xor.c encrypt.h
 
 xor: xor.o encrypt.o
 	gcc $(GCCFLAGS) xor.o encrypt.o -o xor
+
+debug:
+	gcc $(GCCFLAGS) -g -c encrypt.c
+	gcc $(GCCFLAGS) -g -c xor.c
+	gcc $(GCCFLAGS) xor.o encrypt.o -o xor
