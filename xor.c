@@ -3,14 +3,21 @@
 #include <string.h>
 #include "encrypt.h"
 
-char *message = "This is a secret message.";
 
-int main(void)
+int main(int argc, char **argv)
 {
-  char *key = "69";
+  char *message = "This is a sec\nret message.";
 
-  char *sec = encrypt(message, key, strlen(message), 2);
-  char *dec = encrypt(sec, key, strlen(message), 2);
+  if (argc < 2) {
+    fprintf(stderr, "there is no key passed as an argument\n");
+    return 1;
+  }
+
+  char *key = argv[1];
+  size_t keyLength = strlen(key);
+
+  char *sec = encrypt(message, key, strlen(message), keyLength);
+  char *dec = encrypt(sec, key, strlen(message), keyLength);
 
   // for (size_t i = 0; i < strlen(message); i++)
   //   printf("%d %d\n", message[i], sec[i]);
