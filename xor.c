@@ -20,28 +20,32 @@ int main(int argc, char **argv)
   char *key = argv[1];
   size_t keyLength = strlen(key);
 
-  char *line = NULL;
-  size_t lineBuffer = 0;
-  ssize_t lineLength = 0;
+  const size_t BUFFERSIZE = 4096;
+  char s[BUFFERSIZE];
+  ssize_t lineLen;
 
-  while ((lineLength = getline(&line, &lineBuffer, stdin)) != -1)
+  while ((lineLen = read(STDIN_FILENO, s, BUFFERSIZE)) != 0)
   {
-    char *encryptedLine = encrypt(line, key, lineLength, keyLength);
+    if (lineLen == -1) {
+      fprintf(stderr, "Error while reading from stdin: %s", strerror(errno));
+      exit(EXIT_FAILURE);
+    }
 
-    int written = write(STDOUT_FILENO, encryptedLine, lineLength);
+    char *encryptedLine = encrypt(s, key, lineLen, keyLength);
+
+    ssize_t written = write(STDOUT_FILENO, encryptedLine, lineLen);
 
     if (written == -1) {
       fprintf(stderr, "Error while calling write: %s", strerror(errno));
       exit(EXIT_FAILURE);
     }
-    if (written != lineLength) {
-      fprintf(stderr, "write system call didn't write the exact amount of bytes: expected %ld bytes, wrote %d bytes", lineLength, written);
+    if (written != lineLen) {
+      fprintf(stderr, "write system call didn't write the exact amount of bytes:\nexpected %ld bytes\nwrote %ld bytes", lineLen, written);
       exit(EXIT_FAILURE);
     }
 
     free(encryptedLine);
   }
 
-  free(line);
   return 0;
 }
