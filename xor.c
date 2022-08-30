@@ -5,6 +5,11 @@
 #include <errno.h>
 #include "encrypt.h"
 
+void error(char *msg)
+{
+  fprintf(stderr, "%s: %s\n", msg, strerror(errno));
+  exit(EXIT_FAILURE);
+}
 
 int main(int argc, char **argv)
 {
@@ -26,19 +31,15 @@ int main(int argc, char **argv)
 
   while ((lineLen = read(STDIN_FILENO, s, BUFFERSIZE)) != 0)
   {
-    if (lineLen == -1) {
-      fprintf(stderr, "Error while reading from stdin: %s", strerror(errno));
-      exit(EXIT_FAILURE);
-    }
+    if (lineLen == -1)
+      error("Error while reading from stdin");
 
     char *encryptedLine = encrypt(s, key, lineLen, keyLength);
 
     ssize_t written = write(STDOUT_FILENO, encryptedLine, lineLen);
 
-    if (written == -1) {
-      fprintf(stderr, "Error while calling write: %s", strerror(errno));
-      exit(EXIT_FAILURE);
-    }
+    if (written == -1)
+      error("Error while calling write");
     if (written != lineLen) {
       fprintf(stderr, "write system call didn't write the exact amount of bytes:\nexpected %ld bytes\nwrote %ld bytes", lineLen, written);
       exit(EXIT_FAILURE);
