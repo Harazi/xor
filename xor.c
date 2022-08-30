@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
+#include <openssl/sha.h>
 #include "encrypt.h"
 
 void error(char *msg)
@@ -25,6 +26,9 @@ int main(int argc, char **argv)
   char *key = argv[1];
   size_t keyLength = strlen(key);
 
+  unsigned char hash[SHA512_DIGEST_LENGTH];
+  SHA512((u_char*)key, keyLength, hash);
+
   const size_t BUFFERSIZE = 4096;
   char s[BUFFERSIZE];
   ssize_t lineLen;
@@ -34,7 +38,7 @@ int main(int argc, char **argv)
     if (lineLen == -1)
       error("Error while reading from stdin");
 
-    char *encryptedLine = encrypt(s, key, lineLen, keyLength);
+    char *encryptedLine = encrypt(s, hash, lineLen, SHA512_DIGEST_LENGTH);
 
     ssize_t written = write(STDOUT_FILENO, encryptedLine, lineLen);
 
