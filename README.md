@@ -4,7 +4,7 @@ Simple key-based encrytpion using XOR gate.
 
 Building
 ---------
-You need GNU Make and GCC installed for building.
+You need GNU Make, GCC and libss-dev installed for building.
 
 ```bash
 # make install clean
