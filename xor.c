@@ -3,7 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
-#include <openssl/sha.h>
+#include "mince.h"
 #include "encrypt.h"
 
 void error(char *msg)
@@ -23,11 +23,8 @@ int main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 
-	char *key = argv[1];
-	size_t keyLength = strlen(key);
-
-	unsigned char hash[SHA512_DIGEST_LENGTH];
-	SHA512((u_char*)key, keyLength, hash);
+	int hashSize;
+	const unsigned char *hash = mince((unsigned char *)argv[1], &hashSize);
 
 	const size_t BUFFERSIZE = 4096;
 	char s[BUFFERSIZE];
@@ -38,7 +35,7 @@ int main(int argc, char **argv)
 		if (lineLen == -1)
 			error("Error while reading from stdin");
 
-		char *encryptedLine = encrypt(s, hash, lineLen, SHA512_DIGEST_LENGTH);
+		char *encryptedLine = encrypt(s, hash, lineLen, hashSize);
 
 		ssize_t written = write(STDOUT_FILENO, encryptedLine, lineLen);
 
