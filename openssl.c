@@ -1,12 +1,11 @@
 #include <stdlib.h>
 #include <string.h>
-#include <openssl/sha.h>
+#include <openssl/evp.h>
 #include "mince.h"
 
 unsigned char *mince(const unsigned char *data, int *size)
 {
-	*size = SHA512_DIGEST_LENGTH;
-	unsigned char *hash = malloc(*size);
-	SHA512(data, strlen((char *)data), hash);
+	unsigned char *hash = malloc(EVP_MD_get_size(EVP_get_digestbyname("sha3-512")));
+	EVP_Q_digest(NULL, "sha3-512", NULL, data, strlen((char *)data), hash, (size_t *)size);
 	return hash;
 }
