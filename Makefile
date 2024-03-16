@@ -3,6 +3,9 @@ LINKEDLIBS = -lcrypto
 
 all: xor
 
+openssl: xor.c openssl.c
+	$(CC) -Wall -Werror -lcrypto -o xor $^ encrypt.c
+
 encrypt.o: encrypt.c
 	gcc $(GCCFLAGS) -c encrypt.c
 
