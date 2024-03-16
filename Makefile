@@ -9,3 +9,6 @@ prerequisites = $^ ${.ALLSRC}
 
 openssl: xor.c openssl.c
 	$(CC) $(CFLAGS) -o xor $(prerequisites) -lcrypto
+
+gnutls: xor.c gnutls.c
+	$(CC) $(CFLAGS) -o xor $(prerequisites) -lgnutls
