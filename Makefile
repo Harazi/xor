@@ -1,27 +1,11 @@
-GCCFLAGS = -Wall -Werror
-LINKEDLIBS = -lcrypto
+.POSIX:
+.SUFFIXES:
 
-all: xor
+CC            = gcc
+CFLAGS        = -march=native -O3 -pipe -Wall -Werror -s
+
+# GNU Make will evaluate $^, while BSD Make will evaluate ${.ALLSRC}
+prerequisites = $^ ${.ALLSRC}
 
 openssl: xor.c openssl.c
-	$(CC) -Wall -Werror -lcrypto -o xor $^ encrypt.c
-
-encrypt.o: encrypt.c
-	gcc $(GCCFLAGS) -c encrypt.c
-
-xor.o: xor.c encrypt.h
-	gcc $(GCCFLAGS) -c xor.c
-
-xor: xor.o encrypt.o
-	gcc $(GCCFLAGS) xor.o encrypt.o $(LINKEDLIBS) -o xor
-
-debug:
-	gcc $(GCCFLAGS) -g -c encrypt.c
-	gcc $(GCCFLAGS) -g -c xor.c
-	gcc $(GCCFLAGS) xor.o encrypt.o $(LINKEDLIBS) -o xor
-
-install: xor
-	cp xor /usr/local/bin/
-
-clean:
-	rm encrypt.o xor.o xor
+	$(CC) $(CFLAGS) -o xor $(prerequisites) -lcrypto
