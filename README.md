@@ -1,32 +1,27 @@
 XOR
 =====
-Simple key-based encrytpion using XOR gate.
+Simple key-based encryption using XOR gate.
 
 Building
 ---------
-You need GNU Make, GCC and libss-dev installed for building.
+Although bitwise operations are built into C, you still need a cryptographic library for hashing the key to mitigate exploits for guessing the key length. The list of supported libraries are in the Makefile, choose one and build with it.
 
-```bash
-# make install clean
+```sh
+$ make openssl
 ```
-
-The binary will be copied into `/usr/local/bin` directory with the name `xor`.
 
 Usage
 -------
-```bash
-~$ xor <encryption key>
-```
-The programm will encrypt line by line reading from `stdin` and writing to `stdout`.
+The only argument is the encryption key, stdin and stdout are utilized for reading and writing.
 
-you need to redirect the input and output if you want to encrypt files
-
-```bash
-~$ xor "test key" < samplefile.txt > samplefile.txt.xor
+```sh
+$ echo -n 1234567890 | xor test | xxd -p
+# affc3b5aae9a7e27956c
 ```
 
-and for decrypting, simply reverse the input and output with the same encryption key
+Do the reverse for decrypting.
 
-```bash
-~$ xor "test key" < samplefile.txt.xor > samplefile.txt
+```sh
+$ echo -n affc3b5aae9a7e27956c | xxd -p -r | xor test
+# 1234567890
 ```
