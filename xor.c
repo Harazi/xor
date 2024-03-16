@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <errno.h>
 #include "mince.h"
-#include "encrypt.h"
 
 void error(char *msg)
 {
@@ -29,15 +28,22 @@ int main(int argc, char **argv)
 	const size_t BUFFERSIZE = 4096;
 	char s[BUFFERSIZE];
 	ssize_t lineLen;
+	int keyPointer = 0;
 
 	while ((lineLen = read(STDIN_FILENO, s, BUFFERSIZE)) != 0)
 	{
 		if (lineLen == -1)
 			error("Error while reading from stdin");
 
-		char *encryptedLine = encrypt(s, hash, lineLen, hashSize);
+		for (int i = 0; i < lineLen; i++, keyPointer++)
+		{
+			if (keyPointer >= hashSize)
+				keyPointer = 0;
 
-		ssize_t written = write(STDOUT_FILENO, encryptedLine, lineLen);
+			s[i] = s[i] ^ hash[keyPointer];
+		}
+
+		ssize_t written = write(STDOUT_FILENO, s, lineLen);
 
 		if (written == -1)
 			error("Error while calling write");
@@ -45,8 +51,6 @@ int main(int argc, char **argv)
 			fprintf(stderr, "write system call didn't write the exact amount of bytes:\nexpected %ld bytes\nwrote %ld bytes", lineLen, written);
 			exit(EXIT_FAILURE);
 		}
-
-		free(encryptedLine);
 	}
 
 	return 0;
